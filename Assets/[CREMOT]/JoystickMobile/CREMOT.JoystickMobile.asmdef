@@ -1,6 +1,6 @@
 {
-    "name": "[CREMOT]JoystickMobile",
-    "rootNamespace": "[CREMOT]JoystickMobile",
+    "name": "CREMOT.JoystickMobile",
+    "rootNamespace": "CREMOT.JoystickMobile",
     "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
