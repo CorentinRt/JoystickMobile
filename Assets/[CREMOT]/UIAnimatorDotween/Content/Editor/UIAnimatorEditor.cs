@@ -45,6 +45,15 @@ namespace CREMOT.UIAnimatorDotween
 
                     animator.Animations[i].PlayOnStart = EditorGUILayout.Toggle("Play On Start", animator.Animations[i].PlayOnStart);
 
+
+                    SerializedObject serializedObject = new SerializedObject(animator);
+                    SerializedProperty animationsArray = serializedObject.FindProperty("_animations");
+                    SerializedProperty currentAnimation = animationsArray.GetArrayElementAtIndex(i);
+                    SerializedProperty onAnimationFinished = currentAnimation.FindPropertyRelative("OnAnimationFinished");
+                    EditorGUILayout.PropertyField(onAnimationFinished, new GUIContent("OnAnimationFinished"));
+
+                    serializedObject.ApplyModifiedProperties();
+
                     if (GUILayout.Button("Remove Animation"))
                     {
                         var tempList = new System.Collections.Generic.List<UIAnimator.AnimationSettings>(animator.Animations);

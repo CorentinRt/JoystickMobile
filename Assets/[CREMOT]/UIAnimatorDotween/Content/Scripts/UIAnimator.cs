@@ -4,6 +4,7 @@ using DG.Tweening.Plugins.Options;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace CREMOT.UIAnimatorDotween
@@ -16,7 +17,7 @@ namespace CREMOT.UIAnimatorDotween
             FADEIN,
             FADEOUT,
             MOVETO,
-            SCALETO
+            SCALETO,
         }
 
         [System.Serializable]
@@ -28,6 +29,8 @@ namespace CREMOT.UIAnimatorDotween
             [SerializeField] private Transform _targetMove;
             [SerializeField] private Vector3 _targetScale;
             [SerializeField] private bool _playOnStart;
+
+            public UnityEvent OnAnimationFinished;
 
             public EAnimationType AnimationType { get => _animationType; set => _animationType = value; }
             public float Duration { get => _duration; set => _duration = value; }
@@ -82,20 +85,21 @@ namespace CREMOT.UIAnimatorDotween
             switch (settings.AnimationType)
             {
                 case EAnimationType.FADEIN:
-                    AnimateFade(1, settings.Duration, settings.Ease);
+                    AnimateFade(1, settings.Duration, settings.Ease, settings);
                     break;
                 case EAnimationType.FADEOUT:
-                    AnimateFade(0, settings.Duration, settings.Ease);
+                    AnimateFade(0, settings.Duration, settings.Ease, settings);
                     break;
                 case EAnimationType.MOVETO:
-                    transform.DOMove(settings.TargetMove.position, settings.Duration).SetEase(settings.Ease);
+                    transform.DOMove(settings.TargetMove.position, settings.Duration).SetEase(settings.Ease).OnComplete(()=> NotifyAnimationFinished(settings));
                     break;
                 case EAnimationType.SCALETO:
-                    transform.DOScale(settings.TargetScale, settings.Duration).SetEase(settings.Ease);
+                    transform.DOScale(settings.TargetScale, settings.Duration).SetEase(settings.Ease).OnComplete(() => NotifyAnimationFinished(settings));
                     break;
+
             }
         }
-        private void AnimateFade(float targetAlpha, float duration, Ease ease)
+        private void AnimateFade(float targetAlpha, float duration, Ease ease, AnimationSettings settings)
         {
             if (_canvasGroup == null && _image == null)
             {
@@ -106,14 +110,19 @@ namespace CREMOT.UIAnimatorDotween
             if (_canvasGroup != null)
             {
                 TweenerCore<float, float, FloatOptions> t = DOTween.To(() => _canvasGroup.alpha, x => _canvasGroup.alpha = x, targetAlpha, duration);
-                t.SetTarget(_canvasGroup);
+                t.SetTarget(_canvasGroup).OnComplete(() => NotifyAnimationFinished(settings));
             }
             else if (_image != null)
             {
                 Color currentColor = _image.color;
                 TweenerCore<Color, Color, ColorOptions> t = DOTween.ToAlpha(() => _image.color, x => _image.color = x, targetAlpha, duration);
-                t.SetTarget(_image);
+                t.SetTarget(_image).OnComplete(() => NotifyAnimationFinished(settings));
             }
+        }
+
+        private void NotifyAnimationFinished(AnimationSettings settings)
+        {
+            settings.OnAnimationFinished?.Invoke();
         }
 
         public void PlayAllAnimations()
