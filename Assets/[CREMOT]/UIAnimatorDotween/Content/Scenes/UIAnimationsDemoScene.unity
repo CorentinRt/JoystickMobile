@@ -628,7 +628,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _animations:
-  - _animationType: 1
+  - _animationType: 4
     _duration: 1
     _ease: 6
     _targetMove: {fileID: 0}
@@ -832,7 +832,7 @@ MonoBehaviour:
     _ease: 6
     _targetMove: {fileID: 0}
     _targetScale: {x: 0, y: 0, z: 0}
-    _targetColor: {r: 0.4339623, g: 0.4339623, b: 0.4339623, a: 1}
+    _targetColor: {r: 1, g: 0, b: 0, a: 1}
     _playOnStart: 1
     OnAnimationFinished:
       m_PersistentCalls:

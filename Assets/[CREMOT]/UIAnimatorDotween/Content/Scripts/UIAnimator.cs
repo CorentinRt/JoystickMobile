@@ -118,13 +118,11 @@ namespace CREMOT.UIAnimatorDotween
 
             if (_canvasGroup != null)
             {
-                TweenerCore<float, float, FloatOptions> t = DOTween.To(() => _canvasGroup.alpha, x => _canvasGroup.alpha = x, targetAlpha, duration);
-                t.SetTarget(_canvasGroup).OnComplete(() => NotifyAnimationFinished(settings));
+                _canvasGroup.DOFade(targetAlpha, duration).OnComplete(() => NotifyAnimationFinished(settings));
             }
             else if (_image != null)
             {
-                TweenerCore<Color, Color, ColorOptions> t = DOTween.ToAlpha(() => _image.color, x => _image.color = x, targetAlpha, duration);
-                t.SetTarget(_image).OnComplete(() => NotifyAnimationFinished(settings));
+                _image.DOFade(targetAlpha, duration).OnComplete(() => NotifyAnimationFinished(settings));
             }
         }
         private void AnimColorTo(Color targetColor, float duration, Ease ease, AnimationSettings settings)
@@ -135,7 +133,7 @@ namespace CREMOT.UIAnimatorDotween
                 return;
             }
 
-            _image.DOColor(targetColor, duration);
+            _image.DOColor(targetColor, duration).OnComplete(() => NotifyAnimationFinished(settings));
         }
 
         private void NotifyAnimationFinished(AnimationSettings settings)
