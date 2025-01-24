@@ -18,6 +18,7 @@ namespace CREMOT.UIAnimatorDotween
             FADEOUT,
             MOVETO,
             SCALETO,
+            COLORTO
         }
 
         [System.Serializable]
@@ -26,8 +27,12 @@ namespace CREMOT.UIAnimatorDotween
             [SerializeField] private EAnimationType _animationType;
             [SerializeField] private float _duration = 1f;
             [SerializeField] private Ease _ease = Ease.OutQuad;
+
             [SerializeField] private Transform _targetMove;
             [SerializeField] private Vector3 _targetScale;
+
+            [SerializeField] private Color _targetColor;
+
             [SerializeField] private bool _playOnStart;
 
             public UnityEvent OnAnimationFinished;
@@ -38,6 +43,7 @@ namespace CREMOT.UIAnimatorDotween
             public Transform TargetMove{ get => _targetMove; set => _targetMove = value; }
             public bool PlayOnStart { get => _playOnStart; set => _playOnStart = value; }
             public Vector3 TargetScale { get => _targetScale; set => _targetScale = value; }
+            public Color TargetColor { get => _targetColor; set => _targetColor = value; }
         }
         #endregion
 
@@ -66,7 +72,7 @@ namespace CREMOT.UIAnimatorDotween
             {
                 _canvasGroup = canvasGroup;
             }
-            else if (TryGetComponent<Image>(out Image image))
+            if (TryGetComponent<Image>(out Image image))
             {
                 _image = image;
             }
@@ -96,6 +102,9 @@ namespace CREMOT.UIAnimatorDotween
                 case EAnimationType.SCALETO:
                     transform.DOScale(settings.TargetScale, settings.Duration).SetEase(settings.Ease).OnComplete(() => NotifyAnimationFinished(settings));
                     break;
+                case EAnimationType.COLORTO:
+                    AnimColorTo(settings.TargetColor, settings.Duration, settings.Ease, settings);
+                    break;
 
             }
         }
@@ -103,7 +112,7 @@ namespace CREMOT.UIAnimatorDotween
         {
             if (_canvasGroup == null && _image == null)
             {
-                Debug.LogError("CanvasGroup or Image is required for Fade animations. Please add a CanvasGroup component.");
+                Debug.LogError("CanvasGroup or Image is required for Fade animations. Please add a CanvasGroup or Image component.");
                 return;
             }
 
@@ -114,10 +123,19 @@ namespace CREMOT.UIAnimatorDotween
             }
             else if (_image != null)
             {
-                Color currentColor = _image.color;
                 TweenerCore<Color, Color, ColorOptions> t = DOTween.ToAlpha(() => _image.color, x => _image.color = x, targetAlpha, duration);
                 t.SetTarget(_image).OnComplete(() => NotifyAnimationFinished(settings));
             }
+        }
+        private void AnimColorTo(Color targetColor, float duration, Ease ease, AnimationSettings settings)
+        {
+            if (_image == null)
+            {
+                Debug.LogError("Image is required for Color animations. Please add an Image component.");
+                return;
+            }
+
+            _image.DOColor(targetColor, duration);
         }
 
         private void NotifyAnimationFinished(AnimationSettings settings)

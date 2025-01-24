@@ -45,12 +45,19 @@ namespace CREMOT.UIAnimatorDotween
 
                     animator.Animations[i].PlayOnStart = EditorGUILayout.Toggle("Play On Start", animator.Animations[i].PlayOnStart);
 
+                    if (animator.Animations[i].AnimationType == UIAnimator.EAnimationType.COLORTO)
+                    {
+                        animator.Animations[i].TargetColor = EditorGUILayout.ColorField("Target Color", animator.Animations[i].TargetColor);
+                    }
 
+                    // ---------------- Event field ---------------------
                     SerializedObject serializedObject = new SerializedObject(animator);
                     SerializedProperty animationsArray = serializedObject.FindProperty("_animations");
                     SerializedProperty currentAnimation = animationsArray.GetArrayElementAtIndex(i);
                     SerializedProperty onAnimationFinished = currentAnimation.FindPropertyRelative("OnAnimationFinished");
                     EditorGUILayout.PropertyField(onAnimationFinished, new GUIContent("OnAnimationFinished"));
+                    // ------------------------------------------------------
+
 
                     serializedObject.ApplyModifiedProperties();
 
